@@ -1,0 +1,4 @@
+linters: linters_with_defaults(
+    commented_code_linter = NULL
+  ) # lintr
+encoding: "UTF-8"
