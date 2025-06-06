@@ -15,12 +15,13 @@ Optimization is widely used in statistics, thanks to its efficiency for deliveri
 
 - Figure 1 is not produced by codes.
 - Results in Section 5.
-    - First, in `latent_gau.ipynb`, we sample some simulated data, run MCMC to produce the posterior samples, and save the samples in `output/res_latent_gau/`.
-    - We use `latent_gau_sim.py` to produce the variances comparison posterior samples as described in Section S.5.
+    - First, in `latent_gau.py`, we sample some simulated data, run MCMC to produce the posterior samples, and save the samples in `output/res_latent_gau/`.
+    - We use `latent_gau_sim.py` to produce the variances comparison posterior samples as described in Section S.5. The posterior samples are saved in `output/res_latent_gau/`.
+    - The ESS and variances are calculted in `plot_latent_gau.R`.
     - Figure 2 and 3 are plotted by `plot_latent_gau.R`.
 - Results in Section 6.
     - `data_application_runmcmc.R` 
     - `plot_hfcg.R`
 - Results in Section S.6.
-    - `semi_svm.ipynb`
+    - `semi_svm.py`
     - `plot_svm.R`

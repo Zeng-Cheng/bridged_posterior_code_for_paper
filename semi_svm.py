@@ -1,11 +1,9 @@
 # %%
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
 import hamiltorch
 from tqdm.notebook import trange
 from sklearn import svm
-from sklearn.mixture import GaussianMixture
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.linear_model import LogisticRegression
 from src.svm_slice_sampling import svm_log_prob, svm_optim_step, svm_sample_missing

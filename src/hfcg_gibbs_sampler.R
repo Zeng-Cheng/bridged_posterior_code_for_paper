@@ -2,7 +2,7 @@ require(npmr)
 
 gibbs_sampler <- function(
     list_A, fmri_result, list_lambdas, dist_mat, num_iterations
-    ) {
+) {
     S <- length(list_A)
     Klam = length(list_lambdas[[1]]) # assume same number of lams for each s
     # get all losses of ||L_A-L||
@@ -32,7 +32,8 @@ gibbs_sampler <- function(
     alpha_sigma <- 2; beta_sigma <- var(c(colMeans(sqrt(loss_all)))) 
 
     # inv-gamma prior for lambdas
-    alpha <- 2; beta <- 2 * mean(sapply(1:S, function(s) mean(list_lambdas[[s]]))) 
+    alpha <- 2
+    beta <- 2 * mean(sapply(1:S, function(s) mean(list_lambdas[[s]]))) 
 
     updateLambda <- function(lambdas) {
         for(s in 1:S){
@@ -69,7 +70,7 @@ gibbs_sampler <- function(
         sum_dist = 0
         for(s in 1:S){
             for(k in 1:S){
-                if((k != s)){ # & (labels[k] == labels[s])
+                if ((k != s)) { # & (labels[k] == labels[s])
                     sum_dist <- (sum_dist +
                         dist_mat[[s]][[k]][lambdas[s], lambdas[k]] ^ 2)
                 }
@@ -87,11 +88,11 @@ gibbs_sampler <- function(
         shape <- alpha_sigma + S / 2
         all_losses <- sapply(1:S, function(s) {
             return(loss_all[lambdas[s], s])
-            })
+        })
         all_norms <- sapply(1:S, function(s) {
             return(list_lambdas[[s]][lambdas[s]] * 
                 star_norm_all[lambdas[s], s])
-            })
+        })
         rate <- beta_sigma + sum(all_losses) / 2 + sum(all_norms)
         sigma2 <- 1 / rgamma(1, shape, rate)
         if(is.na(sigma2)) {
@@ -104,7 +105,7 @@ gibbs_sampler <- function(
     lambdas <- sapply(1:S, function(s) {sample(1:Klam, size=1, replace=TRUE)})
     gamma <- 1 / rgamma(1, alpha_gamma, beta_gamma)
     sigma2 <- 1 / rgamma(1, alpha_sigma, beta_sigma)
-    
+
     # Create vectors to store samples
     lambdas_samples <- list()
     gamma_samples <- c()
@@ -112,7 +113,7 @@ gibbs_sampler <- function(
 
     starttime = proc.time() # record time
 
-    for(i in 1:num_iterations){
+    for (i in 1:num_iterations){
 
         lambdas <- updateLambda(lambdas)
         gamma <- updateGamma(lambdas)
@@ -132,7 +133,7 @@ gibbs_sampler <- function(
         if(i == 200) print(paste(
             "Est Time: ",
             (proc.time() - starttime)[3] / i * num_iterations / 3600 # in hours
-            ))
+        ))
     }
     return(list(
         lambdas = lambdas_samples, 
