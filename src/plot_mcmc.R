@@ -19,3 +19,25 @@ plot_trace <- function(
 
     ggsave(filename, width = width, height = height, units = 'in')
 }
+
+
+# the function for plotting the acf of the MCMC samples
+plot_acf <- function(res, filename, lag_max=40, width=3.3, height=2) {
+
+    acf_data <- data.frame(
+        ACF = c(
+            as.numeric(acf(res, lag.max = lag_max, plot = FALSE)[[1]])
+        ),
+        Lag = c(0:lag_max)
+    )
+
+    ggplot(data = acf_data, aes(x = Lag, y = ACF)) +
+        geom_bar(stat = "identity", width = 0.5) + theme_bw() +
+        theme(
+            axis.title.x = element_text(size = 16),
+            axis.title.y = element_text(size = 16),
+            axis.text.x = element_text(size = 16),
+            axis.text.y = element_text(size = 16))
+
+    ggsave(filename, width=width, height=height, units='in')
+}

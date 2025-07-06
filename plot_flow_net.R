@@ -2,6 +2,7 @@ library(ggplot2)
 library(scales)
 library(dplyr)
 library(tidyr)
+source('src/plot_mcmc.R')
 
 beta_truth <- c(3.1976, 4.2284, 7.1621, 5.7118, 8.9170)
 edges = c("1", "2", "3", "4", "5")
@@ -77,20 +78,5 @@ ggplot(data = df_acf_w, aes(Lag, ACF, group = Lag)) +
 ggsave("acf_flow_beta.png", width=4.5, height=2.2, units='in')
 
 # acf of sigma2
-acf_sigma2 <- data.frame(
-    ACF = c(
-        as.numeric(acf(sigma2_y_samples[thinned_idx],
-                lag.max = lag_max, plot = FALSE)[[1]])
-    ),
-    Lag = c(0:lag_max)
-)
-
-ggplot(data = acf_sigma2, aes(x = Lag, y = ACF)) +
-    geom_bar(stat = "identity", width = 0.5) + theme_bw() +
-    theme(
-        axis.title.x = element_text(size = 15),
-        axis.title.y = element_text(size = 15),
-        axis.text.x = element_text(size = 14),
-        axis.text.y = element_text(size = 14))
-
-ggsave("acf_flow_sigma2.png", width=4.5, height=2.2, units='in')
+plot_acf(sigma2_y_samples[thinned_idx],
+    filename="acf_flow_sigma2.png", lag_max=lag_max, width=4.5, height=2.2)

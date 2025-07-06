@@ -87,85 +87,24 @@ lag_max <- 40 # number of lags
 thinned_idx <- seq(1, num_samples, by = 1) # no thinning
 
 # acf of b for canonical model
-
-acf_latent_gau <- data.frame(
-    ACF = c(
-        as.numeric(acf(res_b_cano[thinned_idx],
-                lag.max = lag_max, plot = FALSE)[[1]])
-    ),
-    Lag = c(0:lag_max)
-)
-
-ggplot(data = acf_latent_gau, aes(x = Lag, y = ACF)) +
-    geom_bar(stat = "identity", width = 0.5) + theme_bw() +
-    theme(
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 16),
-        axis.text.y = element_text(size = 16))
-
-ggsave("acf_latent_gau_b_cano.png", width=3.3, height=2, units='in')
+plot_acf(
+    res_b_cano[thinned_idx], filename="acf_latent_gau_b_cano.png",
+    lag_max=lag_max, width=3.3, height=2)
 
 # acf of b for bridged model
-
-acf_latent_gau <- data.frame(
-    ACF = c(
-        as.numeric(acf(res_b_bri[thinned_idx],
-                lag.max = lag_max, plot = FALSE)[[1]])
-    ),
-    Lag = c(0:lag_max)
-)
-
-ggplot(data = acf_latent_gau, aes(x = Lag, y = ACF)) +
-    geom_bar(stat = "identity", width = 0.5) + theme_bw() +
-    theme(
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 16),
-        axis.text.y = element_text(size = 16))
-
-ggsave("acf_latent_gau_b_bri.png", width=3.3, height=2, units='in')
+plot_acf(
+    res_b_bri[thinned_idx], filename="acf_latent_gau_b_bri.png",
+    lag_max=lag_max, width=3.3, height=2)
 
 # acf of tau for canonical model
-
-acf_latent_gau <- data.frame(
-    ACF = c(
-        as.numeric(acf(res_tau_cano[thinned_idx],
-                lag.max = lag_max, plot = FALSE)[[1]])
-    ),
-    Lag = c(0:lag_max)
-)
-
-ggplot(data = acf_latent_gau, aes(x = Lag, y = ACF)) +
-    geom_bar(stat = "identity", width = 0.5) + theme_bw() +
-    theme(
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 16),
-        axis.text.y = element_text(size = 16))
-
-ggsave("acf_latent_gau_tau_cano.png", width=3.3, height=2, units='in')
+plot_acf(
+    res_tau_cano[thinned_idx], filename="acf_latent_gau_tau_cano.png",
+    lag_max=lag_max, width=3.3, height=2)
 
 # acf of tau for bridged model
-
-acf_latent_gau <- data.frame(
-    ACF = c(
-        as.numeric(acf(res_tau_bri[thinned_idx],
-                lag.max = lag_max, plot = FALSE)[[1]])
-    ),
-    Lag = c(0:lag_max)
-)
-
-ggplot(data = acf_latent_gau, aes(x = Lag, y = ACF)) +
-    geom_bar(stat = "identity", width = 0.5) + theme_bw() +
-    theme(
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 16),
-        axis.text.y = element_text(size = 16))
-
-ggsave("acf_latent_gau_tau_bri.png", width=3.3, height=2, units='in')
-
+plot_acf(
+    res_tau_bri[thinned_idx], filename="acf_latent_gau_tau_bri.png",
+    lag_max=lag_max, width=3.3, height=2)
 
 ############################################
 ### scatter plots of posterior samples ###
