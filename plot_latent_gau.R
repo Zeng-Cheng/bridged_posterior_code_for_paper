@@ -1,5 +1,6 @@
 library(ggplot2)
 library(coda)
+source('src/plot_mcmc.R')
 
 #### input results
 
@@ -58,70 +59,25 @@ round(sqrt(var(res_tau_cano[thinned_idx])), 2)
 ### plot traces ###
 
 # trace of b for latent normal model
-
-trace_latent_gau = data.frame(b = c(res_b_cano), Iteration = c(1:num_samples))
-
-ggplot(data = trace_latent_gau, aes(x = Iteration, y = b)) +
-    geom_line() + theme_bw() + ylim(0, 7) +
-    theme(legend.position = "none") + ylab("b") +
-    theme(
-        plot.margin = margin(t = 8, r = 20, b = 8, l = 8),
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 16))
-
-ggsave("trace_latent_gau_b_cano.png", width=3.3, height=2, units='in')
+plot_trace(
+    res_b_cano, ylims=c(0, 7), yname="b",
+    filename="trace_latent_gau_b_cano.png", width=3.3, height=2)
 
 # trace of b for latent quadratic model
-
-trace_latent_gau = data.frame(b = c(res_b_bri), Iteration = c(1:num_samples))
-
-ggplot(data = trace_latent_gau, aes(x = Iteration, y = b)) +
-    geom_line() + theme_bw() + ylim(0, 7) +
-    theme(legend.position = "none") + ylab("b") +
-    theme(
-        plot.margin = margin(t = 8, r = 20, b = 8, l = 8),
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 16))
-
-ggsave("trace_latent_gau_b_bri.png", width=3.3, height=2, units='in')
+plot_trace(
+    res_b_bri, ylims=c(0, 7), yname="b",
+    filename="trace_latent_gau_b_bri.png", width=3.3, height=2)
 
 # trace of tau for latent normal model
-
-trace_latent_gau = data.frame(
-    tau = c(res_tau_cano), Iteration = c(1:num_samples))
-
-ggplot(data = trace_latent_gau, aes(x = Iteration, y = tau)) +
-    geom_line() + theme_bw() + ylim(0, 5) +
-    theme(legend.position = "none") + ylab(bquote(tau)) +
-    theme(
-        plot.margin = margin(t = 8, r = 20, b = 8, l = 8),
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 16))
-
-ggsave("trace_latent_gau_tau_cano.png", width=3.3, height=2, units='in')
+plot_trace(
+    res_tau_cano, ylims=c(0, 5), yname=bquote(tau),
+    filename="trace_latent_gau_tau_cano.png", width=3.3, height=2)
 
 # trace of tau for latent quadratic model
+plot_trace(
+    res_tau_bri, ylims=c(0, 5), yname=bquote(tau),
+    filename="trace_latent_gau_tau_bri.png", width=3.3, height=2)
 
-trace_latent_gau = data.frame(
-    tau = c(res_tau_bri), Iteration = c(1:num_samples))
-
-ggplot(data = trace_latent_gau, aes(x = Iteration, y = tau)) +
-    geom_line() + theme_bw() + ylim(0, 5) +
-    theme(legend.position = "none") + ylab(bquote(tau)) +
-    theme(
-        plot.margin = margin(t = 8, r = 20, b = 8, l = 8),
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 16))
-
-ggsave("trace_latent_gau_tau_bri.png", width=3.3, height=2, units='in')
 
 ###################################
 ### plot acfs ###
@@ -336,3 +292,30 @@ ggplot(var_b_res, mapping=aes(x=ss, y=Variance, color=Model)) +
     scale_color_manual(values = c("#429dfb", '#7bd34b'))
 
 ggsave("var_b_latent.png", width=4, height=2.5, unit="in")
+
+
+########################################
+#### plot for variational inference ####
+########################################
+
+#### input results
+# load results for b
+res_b <- unlist(read.table(
+    "output/res_latent_gau_vi/latent_gau_b_samples.txt"))
+# load results for tau
+res_tau <- unlist(read.table(
+    "output/res_latent_gau_vi/latent_gau_tau_samples.txt"))
+
+# scatter plots
+ggplot(data = data.frame(b = res_b, tau = res_tau), aes(x=tau, y=b)) +
+    geom_point(color = "black", size = 0.5) +
+    theme_bw() + # xlim(0, 5) + ylim(0, 7) +
+    xlab(bquote(tau)) + ylab(bquote(b)) +
+    theme(
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15)) +
+    theme(legend.position = "none")
+
+ggsave("scatter_latent_gau_vi.png", width=4, height=2.5, units='in')
