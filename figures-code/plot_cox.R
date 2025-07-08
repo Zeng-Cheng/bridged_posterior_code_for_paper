@@ -57,24 +57,26 @@ plot_acf(
 #### plot density of lambda ###
 ####################################
 
-ggplot(data = data.frame(lbd = res_bri), aes(lbd)) +
-    geom_density(color = 'black') + theme_bw() + xlim(c(0.5, 0.9)) +
+ggplot(
+    data = data.frame(lbd = res_bri), aes(x = lbd, y = after_stat(density))) +
+    geom_histogram(bins=50) + theme_bw() + xlim(c(0.5, 0.9)) +
     theme(
-        axis.title.x = element_text(size = 13),
-        axis.title.y = element_text(size = 13),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12)) +
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14)) +
     ylab('Density') + xlab(bquote(lambda))
 
-ggsave("density_cox_bri.png", width=4.5, height=2.5, units='in')
+ggsave("density_cox_bri.pdf", width=4.5, height=2.5, units='in')
 
-ggplot(data = data.frame(lbd = res_cano), aes(lbd)) +
-    geom_density(color = 'black') + theme_bw() + xlim(c(0.5, 0.9)) +
+ggplot(
+    data = data.frame(lbd = res_cano), aes(x = lbd, y = after_stat(density))) +
+    geom_histogram(bins=50) + theme_bw() + xlim(c(0.5, 0.9)) +
     theme(
-        axis.title.x = element_text(size = 13),
-        axis.title.y = element_text(size = 13),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12)) +
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14)) +
     ylab('Density') + xlab(bquote(lambda))
 
-ggsave("density_cox_cano.png", width=4.5, height=2.5, units='in')
+ggsave("density_cox_cano.pdf", width=4.5, height=2.5, units='in')

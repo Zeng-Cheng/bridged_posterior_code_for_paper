@@ -3,7 +3,7 @@ library(ggplot2)
 ###########################################
 ## plot ROC curves
 
-library(pROC)
+library(pROC) # install.packages("pROC")
 data_logis <- read.table('output/res_svm/pred_prob_logis.txt')
 roc_logis <- roc(data_logis[, 1], data_logis[, 2])
 data_bridged <- read.table('output/res_svm/pred_prob_bridged.txt')
@@ -21,7 +21,7 @@ ggplot(
             times = c(length(roc_logis$spe), length(roc_gibbs$spe),
                 length(roc_bridged$spe)))),
     aes(x=fpr, y=tpr, color=Model)) +
-    geom_path(size = 0.5) + theme_bw() +
+    geom_path(linewidth = 0.5) + theme_bw() +
     xlab('False positive rate') + ylab('True positive rate') +
     scale_color_manual(values = c("#ef609f", "#429dfb", '#7bd34b')) +
     theme(
@@ -29,11 +29,12 @@ ggplot(
         axis.title.y = element_text(size = 12),
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
-        legend.title = element_text(size = 9),
-        legend.text = element_text(size = 8),
-        legend.position = c(0.7, 0.25))
+        legend.title = element_text(size = 11),
+        legend.text = element_text(size = 9),
+        legend.position = 'inside',
+        legend.position.inside = c(0.7, 0.25))
 
-ggsave("roc.png", width=5, height=3, units='in')
+ggsave("roc.pdf", width=5.3, height=3.3, units='in')
 
 
 #################################################################
@@ -56,7 +57,7 @@ ggplot(
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12))
 
-ggsave("missing_prob_heart.png", width=4.5, height=2.5, units='in')
+ggsave("missing_prob_heart.pdf", width=4.5, height=2.5, units='in')
 
 
 
@@ -65,7 +66,7 @@ ggsave("missing_prob_heart.png", width=4.5, height=2.5, units='in')
 ####################################
 
 angles_beta <- c()
-res_w <- as.matrix(read.table("res_svm/beta_trace_heart.txt"))
+res_w <- as.matrix(read.table("output/res_svm/beta_trace_heart.txt"))
 num_iters <- nrow(res_w)
 beta_svc <- colMeans(res_w)
 
@@ -84,4 +85,4 @@ ggplot(data = data.frame(Angle = angles_beta), aes(Angle)) +
         axis.text.y = element_text(size = 12)) +
     ylab('Density')
 
-ggsave("density_angle_heart.png", width=4.5, height=2.5, units='in')
+ggsave("density_angle_heart.pdf", width=4.5, height=2.5, units='in')

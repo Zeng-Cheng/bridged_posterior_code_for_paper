@@ -1,18 +1,14 @@
 # package and setting for plot
 require("kernlab")
-library(reshape2)
+library(reshape2) # install.packages("reshape2")
 library(ggplot2)
 jet_colors <- colorRampPalette(c("#00007F", "blue", "#007FFF",
                 "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
 
 # load data and results
-# The data are not included in the Github repository
-# if one needs to run the data application (either runmcmc or plot_hfcg)
-# first download the files in the following link to data folder
-url = 'https://www.dropbox.com/scl/fo/pwxznmap3cm97iycuobw8/h?rlkey=of0spg09mgh3ly9a38svnktce&e=1&dl=0'
-
 # 'list_A' contains correlation matrices for each subject
-load("data/graph_fmri_all.Rda") 
+load("data/graph_fmri_all.Rda")
+# load('C:/Users/zengc/UFL Dropbox/Cheng Zeng/data_for_bridged_paper/graph_fmri_all.Rda')
 
 S <- length(list_A)
 load("data/fmri_labels.RDa") # Labels for each subject in 'label_list'
@@ -31,7 +27,12 @@ load("data/geodist_uncommon_lam_all.RData") # dist between L at diff lambdas
 # 'lambdas_all'
 load("data/lam_uncommon_all.RData") # all possible lambda values for each s
 
-load("HFCG_gibbs_res.Rda")
+laps <- list() # Laplacians for each subject
+for (s in 1:S) {
+    laps[[s]] <- diag(rowSums(list_A[[s]])) - list_A[[s]]
+}
+
+load("output/res_hfcg/HFCG_gibbs_res.Rda")
 num_iters <- 10000
 burn_in <- 2000
 
@@ -113,7 +114,7 @@ geom_boxplot(outlier.shape = NA, varwidth = TRUE) + theme_bw() +
 scale_y_discrete(labels = c("Between Groups" = "Between\nGroups")) +
 xlim(10, 30)
 
-ggsave("boxplots_dist.png", width=4, height=2.5, units='in')
+ggsave("boxplots_dist.pdf", width=4, height=2.5, units='in')
 
 ### pairwise distances between original matrices
 
@@ -148,9 +149,9 @@ df_boxplot <- data.frame(
 ggplot(data = df_boxplot, aes(Distance, Source, group = Source)) +
 geom_boxplot(outlier.shape = NA, varwidth = TRUE) + theme_bw() +
 scale_y_discrete(labels = c("Between Groups" = "Between\nGroups")) +
-xlim(1, 11)
+xlim(1.5, 10.5)
 
-ggsave("boxplots_dist_ori.png", width=4, height=2.5, units='in')
+ggsave("boxplots_dist_ori.pdf", width=4, height=2.5, units='in')
 
 ##################################################
 ##################################################
@@ -175,11 +176,11 @@ geom_bar() + theme_bw() + xlab("Number of Communities") + ylab('Count') +
 geom_vline(xintercept = mean(num_cum_healthy), color = '#ef609f') +
 xlim(0, 26)
 
-ggsave("HFCG_bar_healthy.png", width = 4, height = 2.5, unit = "in")
+ggsave("HFCG_bar_healthy.pdf", width = 4, height = 2.5, unit = "in")
 
-ggplot(data = data.frame(x = num_cum_disease), aes(x = x)) +
+ggplot(data = data.frame(x = num_cum_diseased), aes(x = x)) +
 geom_bar() + theme_bw() + xlab("Number of Communities") + ylab('Count') +
 geom_vline(xintercept = mean(num_cum_diseased), color = '#ef609f') +
 xlim(0, 26)
 
-ggsave("HFCG_bar_diseased.png", width = 4, height = 2.5, unit = "in")
+ggsave("HFCG_bar_diseased.pdf", width = 4, height = 2.5, unit = "in")

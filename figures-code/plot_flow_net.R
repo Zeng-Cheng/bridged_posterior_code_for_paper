@@ -4,7 +4,6 @@ library(dplyr)
 library(tidyr)
 source('src/plot_mcmc.R')
 
-beta_truth <- c(3.1976, 4.2284, 7.1621, 5.7118, 8.9170)
 edges = c("1", "2", "3", "4", "5")
 
 beta_samples = read.table("output/res_flow_net/flow_net_beta_samples.txt",
@@ -28,18 +27,17 @@ for (i in c(1:5)) {
         aes(x = x, y = after_stat(density))) +
         geom_histogram(bins=50) + theme_bw() +
         xlab(bquote(lambda[.(edges[i])])) + ylab('Density') +
-        geom_vline(
-            xintercept = beta_truth[i], color = '#ef609f', linewidth = 1.2) +
+        scale_x_continuous(n.breaks = 3) +
         theme(
-            axis.title.x = element_text(size = 15),
-            axis.title.y = element_text(size = 14),
-            axis.text.x = element_text(size = 12),
-            axis.text.y = element_text(size = 12)
+            axis.title.x = element_text(size = 16),
+            axis.title.y = element_text(size = 16),
+            axis.text.x = element_text(size = 13),
+            axis.text.y = element_text(size = 13)
         ) +
         theme(plot.margin = margin(8, 15, 3, 3))
 
     ggsave(
-        paste("hist_flow_beta", i, ".png", sep=""),
+        paste("hist_flow_beta", i, ".pdf", sep=""),
         width=2.2, height=1.5, units="in")
 }
 
@@ -75,8 +73,8 @@ ggplot(data = df_acf_w, aes(Lag, ACF, group = Lag)) +
         axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 14))
 
-ggsave("acf_flow_beta.png", width=4.5, height=2.2, units='in')
+ggsave("acf_flow_beta.pdf", width=4.5, height=2.2, units='in')
 
 # acf of sigma2
 plot_acf(sigma2_y_samples[thinned_idx],
-    filename="acf_flow_sigma2.png", lag_max=lag_max, width=4.5, height=2.2)
+    filename="acf_flow_sigma2.pdf", lag_max=lag_max, width=4.5, height=2.2)

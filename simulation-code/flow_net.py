@@ -7,6 +7,7 @@ import random
 from statsmodels.graphics.tsaplots import plot_acf
 import torch
 import torch.distributions as dist
+from scipy.stats import truncnorm
 
 from tqdm.notebook import trange
 from src.utils import acc_rate
@@ -33,6 +34,7 @@ if not nx.has_path(net_graph, source, sink):
     print("Warning: No path from source to sink! You may want to regenerate the graph.")
 
 print(f"Number of edges: {net_graph.number_of_edges()}")
+G = net_graph.copy()
 
 # %%
 # plot the network graph generated
@@ -88,15 +90,17 @@ torch.where(z_truth > 0)
 # %%
 # Generate synthetic observations y and c with Gaussian noise
 sigma_y = 1.0  # Standard deviation for y
-ss_y = 1000
-data_y = torch.randn(size=(ss_y, z_truth.shape[0])) * sigma_y + z_truth
-beta_ind = [5, 34, 120, 278, 319]
+ss_y = 500
+
+data_y = torch.randn(ss_y, E.shape[0]) * sigma_y + z_truth
+
+# torch.where(z_truth > 0)[0][torch.where(beta_truth[torch.where(z_truth > 0)] == z_truth[torch.where(z_truth > 0)])[0]]
+beta_ind = [5, 34, 146, 278, 321]
 n_params = len(beta_ind)
 print(f"beta truth: {beta_truth[beta_ind]}")
+print(f"z truth: {z_truth[beta_ind]}")
 
 # %%
-
-G = net_graph.copy()
 
 def log_posterior(beta, sigma2_y, data_y):
 
@@ -112,7 +116,7 @@ def log_posterior(beta, sigma2_y, data_y):
         z[i] = flow_dict[u][v]
 
     loglik = -torch.sum((data_y - z) ** 2) / (2 * sigma2_y)
-    loglik = loglik - ss_y * n_params * torch.log(sigma2_y) / 2
+    loglik = loglik - ss_y * E.shape[0] * torch.log(sigma2_y) / 2
     
     beta_prior = dist.Exponential(0.2).expand([n_params])
     sigma2_y_prior = dist.InverseGamma(2.0, 5.0)
@@ -187,12 +191,14 @@ for epoch in trange(n_samples):
 
 
 # %%
+beta_samples = np.array(beta_samples)
+sigma2_y_samples = np.array(sigma2_y_samples)
+
+# %%
+
 # ===========================
 # save the posterior samples
 # ===========================
-
-beta_samples = np.array(beta_samples)
-sigma2_y_samples = np.array(sigma2_y_samples)
 
 np.savetxt('output/res_flow_net/flow_net_beta_samples.txt', beta_samples, delimiter=',')
 np.savetxt('output/res_flow_net/flow_net_sigma2_y_samples.txt', sigma2_y_samples, delimiter=',')
@@ -242,8 +248,10 @@ plt.figure(figsize=(15, 6))
 for i in range(5):
     plt.subplot(2, 5, i + 1)
     plt.hist(beta_samples[burn_in:, i], bins=30, density=True, alpha=0.7)
-    plt.axvline(np.array(z_truth)[beta_ind[i]], color='red', linestyle='--', linewidth=2)
+    plt.axvline(np.asarray(z_truth)[beta_ind[i]], color='red', linestyle='--', linewidth=2)
     plt.xlabel(f"$\\beta_{i}$", fontsize=14)
     plt.ylabel("Density", fontsize=14)
 plt.tight_layout(pad=3)
 plt.show()
+
+# %%
