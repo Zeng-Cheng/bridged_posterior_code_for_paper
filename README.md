@@ -1,16 +1,16 @@
-## Bridged Posterior: Optimization, Profile Likelihood and a New Approach to Generalized Bayes
+# Bridged Posterior: Optimization, Profile Likelihood and a New Approach to Generalized Bayes
 
 This repository contains the reproducibility materials for the paper: Bridged Posterior: Optimization, Profile Likelihood and a New Approach to Generalized Bayes.
 
-### Packages needed in the repository
+## Packages needed in the repository
 
 - Python packages: torch, numpy, matplotlib, jax, scipy, tqdm, polyagamma, sklearn, hamiltorch, pyro, networkx, statsmodels, numpyro
 - R packages: ggplot2, coda, scales, dplyr, tidyr, kernlab, reshape2, npmr, INLA
 
 
-### Guidance of using the codes to reproduce the figures and tables in the paper
+## Guidance of using the codes to reproduce the figures and tables in the paper
 
-#### Organization
+### Organization
 
 simulation-code contains codes for simulations.
 
@@ -20,7 +20,7 @@ figures-code contains codes for producing all figures and tables except for Figu
 
 output contains results from running the code in simulation-code and real-data-code.
 
-#### Workflow
+### Workflow
 
 - Figure 3 is not produced by codes.
 - Results in Section 2.2 and S5.1.
