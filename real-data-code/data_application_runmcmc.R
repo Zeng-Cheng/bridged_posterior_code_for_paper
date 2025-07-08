@@ -1,7 +1,7 @@
 # The data are not included in the Github repository
 # if one needs to run the data application (either runmcmc or plot_hfcg)
 # first download the files in the following link to data folder
-url = 'https://www.dropbox.com/scl/fo/pwxznmap3cm97iycuobw8/h?rlkey=of0spg09mgh3ly9a38svnktce&e=1&dl=0'
+url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
 
 load("data/graph_fmri_all.Rda") 
 # 'list_A' contains correlation matrices for each subject
@@ -34,7 +34,7 @@ for (s in 1:S) {
 ###########################################################################
 
 run_mcmc = FALSE
-if run_mcmc {
+if(run_mcmc) {
     source("src/hfcg_gibbs_sampler.R")
     
     post_samples <- gibbs_sampler(laps, Z_all, lambdas_all, geodist, num_iters)

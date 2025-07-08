@@ -6,6 +6,12 @@ jet_colors <- colorRampPalette(c("#00007F", "blue", "#007FFF",
                 "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
 
 # load data and results
+
+# The data are not included in the Github repository
+# if one needs to run the data application (either runmcmc or plot_hfcg)
+# first download the files in the following link to data folder
+url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
+
 # 'list_A' contains correlation matrices for each subject
 load("data/graph_fmri_all.Rda")
 # load('C:/Users/zengc/UFL Dropbox/Cheng Zeng/data_for_bridged_paper/graph_fmri_all.Rda')
