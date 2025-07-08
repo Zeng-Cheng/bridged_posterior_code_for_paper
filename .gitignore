@@ -1,6 +1,7 @@
-output/
 *.Rda
 *.RData
 *.csv
-.lintr
 *.pyc
+output/res_latent_gau_vi/latent_gau_z_samples.txt
+output/res_flow_net
+output/res_hfcg
