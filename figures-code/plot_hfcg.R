@@ -50,9 +50,11 @@ burn_in <- 2000
 round_to_range <- function(x, possible_values) {
     which.min(abs(x - possible_values))
 }
+
 mean_post_samples <- rowMeans(sapply((burn_in + 1):num_iters, function(i) {
     sapply(1:S, function(s) lambdas_all[[s]][post_samples[[1]][[i]][s]])
 }))
+
 post_mean_int <- sapply(1:S, function(s) {
     round_to_range(
         mean_post_samples[s],
@@ -204,14 +206,13 @@ p <- dim(list_A[[1]])[1]
 
 plot_adj_mat <- function(subj, filename) {
 
-    LA <- Z_all[[subj]][[post_mean_int[subj]]]
-    LA[LA > 0] <- 0
+    LA <- Z_all[[subj]][[post_mean_int[subj]]] # nolint: object_usage_linter
     diag(LA) <- 0
-    print(sum(svd(LA)$d < 1E-5))
+    LA[LA > 0] <- 0
     cor_matrix <- melt(-LA)
 
-    ggplot(cor_matrix, aes(y = Var1, x = Var2)) +
-        geom_raster(aes(fill = value)) +
+    ggplot(cor_matrix, aes(y = Var1, x = Var2)) + # nolint: object_usage_linter
+        geom_raster(aes(fill = value)) + # nolint: object_usage_linter
         scale_fill_gradientn(
             colours = jet_colors(100), breaks = seq(0, 0.04, by = 0.01),
             limits = c(0, 0.04)) +
@@ -229,7 +230,7 @@ plot_adj_mat <- function(subj, filename) {
     ggsave(filename, width = 2.2, height = 1.8, unit = "in")
 }
 
-plot_adj_mat(12, "subj_healthy1.png")
-plot_adj_mat(23, "subj_healthy2.png")
-plot_adj_mat(91, "subj_deseased1.png")
-plot_adj_mat(158, "subj_deseased2.png")
+plot_adj_mat(3, "subj_healthy1.png")
+plot_adj_mat(9, "subj_healthy2.png")
+plot_adj_mat(99, "subj_deseased1.png")
+plot_adj_mat(123, "subj_deseased2.png")
