@@ -257,4 +257,4 @@ ggplot(data = data.frame(b = res_b, tau = res_tau), aes(x=tau, y=b)) +
         axis.text.y = element_text(size = 15)) +
     theme(legend.position = "none")
 
-ggsave("scatter_latent_gau_vi.png", width=4, height=2.5, units='in')
+ggsave("scatter_latent_gau_vi.pdf", width=4, height=2.5, units='in')

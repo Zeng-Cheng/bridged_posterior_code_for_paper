@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 import pyro
 import pyro.distributions as dist
+from pyro.infer.autoguide.initialization import init_to_value
 from pyro.contrib.autoguide import AutoIAFNormal, AutoDiagonalNormal
 from pyro.infer import SVI, Trace_ELBO, Predictive
 
@@ -30,14 +31,14 @@ X = torch.tensor(X).float()
 dist_x = torch.tensor(scipy.spatial.distance.cdist(X, X) ** 2).float()
 
 def log_posterior(z, tau, b, y):
-    Q = ((torch.exp(-dist_x / b / 2)) + 0.01 * torch.eye(n)) * tau
+    Q = ((torch.exp(-dist_x / b / 2))) * tau + 0.0001 * torch.eye(n)
     term1 = torch.sum(y * z)
     term2 = -torch.sum(torch.logaddexp(torch.tensor(0.0), z))
     logL = -0.5 * z @ torch.linalg.inv(Q) @ z + term1 + term2
     return logL
 
 def model(y):
-    z = pyro.sample("z", dist.Normal(0.0, 10.0).expand([n]).to_event(1)) # type: ignore
+    z = pyro.sample("z", dist.Normal(0.0, 5.0).expand([n]).to_event(1)) # type: ignore
     tau = pyro.sample("tau", dist.HalfNormal(1.0))
     b = pyro.sample("b", dist.InverseGamma(2.0, 5.0))
     logL = log_posterior(z, tau, b, y)
@@ -49,17 +50,18 @@ def model(y):
 # Variational inference
 #==================================
 
-guide = AutoDiagonalNormal(model, init_scale=1.0)
-# guide = AutoIAFNormal(model, hidden_dim=[32, 32], num_transforms=4)
-optimizer = pyro.optim.Adam({"lr": 1e-4})
-# scheduler = pyro.optim.ExponentialLR({'optimizer': optimizer, 'optim_args': {'lr': 1e-3}, 'gamma': 0.6})
-svi = SVI(model, guide, optimizer, loss=Trace_ELBO(num_particles=5))
+initialize = {'b': torch.tensor(3.0), 'tau': torch.tensor(1.0)}
+guide = AutoDiagonalNormal(model, init_scale=0.6, init_loc_fn=init_to_value(values=initialize))
+# guide = AutoIAFNormal(model, hidden_dim=[1024], num_transforms=3,
+#                      init_loc_fn=init_to_value(values=initialize))
+optimizer = pyro.optim.Adam({"lr": 1e-3})
+svi = SVI(model, guide, optimizer, loss=Trace_ELBO(num_particles=1))
 
 loss_history = []
-for epoch in trange(50000):
+for epoch in trange(20000):
     loss = svi.step(y)
     loss_history.append(loss)
-    if epoch % 2000 == 0:
+    if epoch % 1000 == 0:
         print(f"Epoch {epoch}, Loss: {loss:.2f}")
 
 # %%
@@ -80,7 +82,7 @@ plt.tight_layout()
 plt.show()
 
 # %%
-predictive = Predictive(model=model, guide=guide, num_samples=4000,
+predictive = Predictive(model=model, guide=guide, num_samples=2000,
     return_sites=["tau", "b", "z"])
 
 samples = predictive(y)

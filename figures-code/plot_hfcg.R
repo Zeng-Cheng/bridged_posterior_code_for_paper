@@ -3,18 +3,18 @@ require("kernlab")
 library(reshape2) # install.packages("reshape2")
 library(ggplot2)
 jet_colors <- colorRampPalette(c("#00007F", "blue", "#007FFF",
-                "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+        "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
 
 # load data and results
 
 # The data are not included in the Github repository
 # if one needs to run the data application (either runmcmc or plot_hfcg)
 # first download the files in the following link to data folder
-url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
+url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/
+AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
 
 # 'list_A' contains correlation matrices for each subject
 load("data/graph_fmri_all.Rda")
-# load('C:/Users/zengc/UFL Dropbox/Cheng Zeng/data_for_bridged_paper/graph_fmri_all.Rda')
 
 S <- length(list_A)
 load("data/fmri_labels.RDa") # Labels for each subject in 'label_list'
@@ -22,7 +22,7 @@ labels = sapply(label_list, function(ll) {
     if(ll == "CN") return(0)
     else if (ll == "LMCI") return(1)
     else return(2)
-    })
+})
 
 # 'Z_all'
 load("data/Z_uncommon_lam_all.RData") # reduced rank matrices at diff lambdas
@@ -38,6 +38,7 @@ for (s in 1:S) {
     laps[[s]] <- diag(rowSums(list_A[[s]])) - list_A[[s]]
 }
 
+# 'post_samples'
 load("output/res_hfcg/HFCG_gibbs_res.Rda")
 num_iters <- 10000
 burn_in <- 2000
@@ -47,25 +48,26 @@ burn_in <- 2000
 
 # round to range to get the lambda that is closest to the posterior mean
 round_to_range <- function(x, possible_values) {
-    return(which.min(abs(x - possible_values)))
+    which.min(abs(x - possible_values))
 }
 mean_post_samples <- rowMeans(sapply((burn_in + 1):num_iters, function(i) {
     sapply(1:S, function(s) lambdas_all[[s]][post_samples[[1]][[i]][s]])
-    }))
+}))
 post_mean_int <- sapply(1:S, function(s) {
-    return(round_to_range(
+    round_to_range(
         mean_post_samples[s],
         possible_values=lambdas_all[[s]]
-        ))
+    )
 })
 print(post_mean_int) # position of posterior mean of lambda for each s
 
 # get pairwise distances between networks with posterior mean
 pair_dist <- matrix(0, length(1:S), length(1:S))
-for(s in 1:S){
-    for(k in 1:S){
-        if(s != k){
-            pair_dist[s, k] <- geodist[[s]][[k]][post_mean_int[s], post_mean_int[k]]
+for (s in 1:S){
+    for (k in 1:S){
+        if (s != k) {
+            pair_dist[s, k] <- geodist[[s]][[k]][
+                post_mean_int[s], post_mean_int[k]]
         }
     }
 }
@@ -74,7 +76,7 @@ for(s in 1:S){
 s <- apply(pair_dist, 1, function(x) quantile(x, 0.01))
 cls_res <- table(specc(
     as.kernelMatrix(exp(-t(pair_dist ^ 2 / s) / s)), centers=3
-    ), labels)
+), labels)
 cls_res
 # apply(cls_res, 2, max) / colSums(cls_res)
 
@@ -84,18 +86,21 @@ cls_res
 
 cor_matrix <- melt(pair_dist / max(pair_dist))
 ggplot(cor_matrix, aes(y = Var1, x = Var2)) + geom_raster(aes(fill = value)) +
-scale_fill_gradientn(
-    colours = jet_colors(100), breaks = seq(0, 1, by = 0.1), limits = c(0, 1)
+    scale_fill_gradientn(
+        colours = jet_colors(100), breaks = seq(0, 1, by = 0.1),
+        limits = c(0, 1)
     ) +
-guides(fill = guide_colourbar(barwidth = 0.5, barheight = 16, title = NULL)) +
-labs(x = NULL, y = NULL) + scale_y_reverse(breaks = seq(0, S, length.out = 2)) +
-scale_x_continuous(breaks = seq(0, S, length.out = 2)) +
-theme_void() + theme(
+    guides(fill = guide_colourbar(
+        barwidth = 0.5, barheight = 16, title = NULL)) +
+    labs(x = NULL, y = NULL) +
+    scale_y_reverse(breaks = seq(0, S, length.out = 2)) +
+    scale_x_continuous(breaks = seq(0, S, length.out = 2)) +
+    theme_void() + theme(
     legend.justification = c(0, 0.6),
     legend.text = element_text(size = 11)) +
-theme(
-    axis.text.x = element_text(size = 11, vjust = 5),
-    axis.text.y = element_text(size = 11, hjust = 1.6))
+    theme(
+        axis.text.x = element_text(size = 11, vjust = 5),
+        axis.text.y = element_text(size = 11, hjust = 1.6))
 ggsave("pair_dist.png", width = 4.4, height = 3.64, unit = "in")
 
 ### boxplots
@@ -166,27 +171,65 @@ ggsave("boxplots_dist_ori.pdf", width=4, height=2.5, units='in')
 
 num_cum_healthy <- sapply(1:64, function(s) {
     curr_fmri <- Z_all[[s]][[post_mean_int[s]]]
-    return(sum(svd(curr_fmri)$d < 1E-5))
+    sum(svd(curr_fmri)$d < 1E-5)
 })
 
 num_cum_diseased <- sapply(65:S, function(s) {
     curr_fmri <- Z_all[[s]][[post_mean_int[s]]]
-    return(sum(svd(curr_fmri)$d < 1E-5))
+    sum(svd(curr_fmri)$d < 1E-5)
 })
 
 mean(num_cum_healthy)
 mean(num_cum_diseased)
 
 ggplot(data = data.frame(x = num_cum_healthy), aes(x = x)) +
-geom_bar() + theme_bw() + xlab("Number of Communities") + ylab('Count') +
-geom_vline(xintercept = mean(num_cum_healthy), color = '#ef609f') +
-xlim(0, 26)
+    geom_bar() + theme_bw() + xlab("Number of Communities") + ylab('Count') +
+    geom_vline(xintercept = mean(num_cum_healthy), color = '#ef609f') +
+    xlim(0, 26)
 
 ggsave("HFCG_bar_healthy.pdf", width = 4, height = 2.5, unit = "in")
 
 ggplot(data = data.frame(x = num_cum_diseased), aes(x = x)) +
-geom_bar() + theme_bw() + xlab("Number of Communities") + ylab('Count') +
-geom_vline(xintercept = mean(num_cum_diseased), color = '#ef609f') +
-xlim(0, 26)
+    geom_bar() + theme_bw() + xlab("Number of Communities") + ylab('Count') +
+    geom_vline(xintercept = mean(num_cum_diseased), color = '#ef609f') +
+    xlim(0, 26)
 
 ggsave("HFCG_bar_diseased.pdf", width = 4, height = 2.5, unit = "in")
+
+
+##########################################
+######### adjacency matrix plots #########
+
+p <- dim(list_A[[1]])[1]
+
+plot_adj_mat <- function(subj, filename) {
+
+    LA <- Z_all[[subj]][[post_mean_int[subj]]]
+    LA[LA > 0] <- 0
+    diag(LA) <- 0
+    print(sum(svd(LA)$d < 1E-5))
+    cor_matrix <- melt(-LA)
+
+    ggplot(cor_matrix, aes(y = Var1, x = Var2)) +
+        geom_raster(aes(fill = value)) +
+        scale_fill_gradientn(
+            colours = jet_colors(100), breaks = seq(0, 0.04, by = 0.01),
+            limits = c(0, 0.04)) +
+        guides(fill = guide_colourbar(
+            barwidth = 0.3, barheight = 6, title = NULL)) +
+        labs(x = NULL, y = NULL) +
+        scale_y_reverse(breaks = seq(0, p, length.out = 2)) +
+        scale_x_continuous(breaks = seq(0, p, length.out = 2)) +
+        theme_void() + theme(legend.justification = c(0, 0.6),
+        legend.text = element_text(size = 5)) +
+        theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank())
+
+    ggsave(filename, width = 2.2, height = 1.8, unit = "in")
+}
+
+plot_adj_mat(12, "subj_healthy1.png")
+plot_adj_mat(23, "subj_healthy2.png")
+plot_adj_mat(91, "subj_deseased1.png")
+plot_adj_mat(158, "subj_deseased2.png")

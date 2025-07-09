@@ -6,6 +6,7 @@ linters: linters_with_defaults(
       regexes = character()),
     assignment_linter = NULL,
     indentation_linter(indent = 4L, hanging_indent_style = c("never")),
-    infix_spaces_linter(exclude_operators = "=")
+    infix_spaces_linter(exclude_operators = "="),
+    seq_linter = NULL
   ) # lintr
 encoding: "UTF-8"
