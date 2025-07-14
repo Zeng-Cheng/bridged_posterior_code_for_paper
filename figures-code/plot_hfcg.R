@@ -13,30 +13,29 @@ jet_colors <- colorRampPalette(c("#00007F", "blue", "#007FFF",
 url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/
 AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
 
-# 'list_A' contains correlation matrices for each subject
-load("data/graph_fmri_all.Rda")
+# 'listA' contains correlation matrices for each subject
+load("data/graph_fmri.Rda")
 
-S <- length(list_A)
-load("data/fmri_labels.RDa") # Labels for each subject in 'label_list'
+S <- length(listA)
+load("data/fmri_labels.Rda") # Labels for each subject in 'label_list'
 labels = sapply(label_list, function(ll) {
-    if(ll == "CN") return(0)
-    else if (ll == "LMCI") return(1)
-    else return(2)
+    if(ll == "CN") 0
+    else if (ll == "LMCI") 1
+    else 2
 })
 
-# 'Z_all'
-load("data/Z_uncommon_lam_all.RData") # reduced rank matrices at diff lambdas
+# 'Zres'
+load("data/hfcg_Z.Rda") # reduced rank matrices at diff lambdas
 
 # 'geodist'
-load("data/geodist_uncommon_lam_all.RData") # dist between L at diff lambdas
+load("data/geodist_uncommon_lam_all.Rda") # dist between L at diff lambdas
 
 # 'lambdas_all'
-load("data/lam_uncommon_all.RData") # all possible lambda values for each s
+load("data/lam_uncommon_all.Rda") # all possible lambda values for each s
 
-laps <- list() # Laplacians for each subject
-for (s in 1:S) {
-    laps[[s]] <- diag(rowSums(list_A[[s]])) - list_A[[s]]
-}
+# Laplacians for each subject
+laps <- lapply(1:S, function(s) {
+    diag(rowSums(listA[[s]])) - listA[[s]]})
 
 # 'post_samples'
 load("output/res_hfcg/HFCG_gibbs_res.Rda")
@@ -123,19 +122,19 @@ df_boxplot <- data.frame(
 )
 
 ggplot(data = df_boxplot, aes(Distance, Source, group = Source)) +
-geom_boxplot(outlier.shape = NA, varwidth = TRUE) + theme_bw() +
-scale_y_discrete(labels = c("Between Groups" = "Between\nGroups")) +
-xlim(10, 30)
+    geom_boxplot(outlier.shape = NA, varwidth = TRUE) + theme_bw() +
+    scale_y_discrete(labels = c("Between Groups" = "Between\nGroups")) +
+    xlim(10, 30)
 
 ggsave("boxplots_dist.pdf", width=4, height=2.5, units='in')
 
 ### pairwise distances between original matrices
 
-p <- dim(list_A[[1]])[1]
+p <- dim(listA[[1]])[1]
 pair_dist_ori = matrix(0, length(1:S), length(1:S))
-for(s in 1:S) {
+for (s in 1:S) {
     LAs <- laps[[s]]
-    for(k in 1:S) {
+    for (k in 1:S) {
         LAk <- laps[[k]]
         evs = Re(svd(solve(LAs + diag(1, p) * 1e-3, LAk + diag(1, p) * 1e-3))$d)
         pair_dist_ori[s, k] = sqrt(sum((log(evs)) ^ 2))
@@ -160,9 +159,9 @@ df_boxplot <- data.frame(
 )
 
 ggplot(data = df_boxplot, aes(Distance, Source, group = Source)) +
-geom_boxplot(outlier.shape = NA, varwidth = TRUE) + theme_bw() +
-scale_y_discrete(labels = c("Between Groups" = "Between\nGroups")) +
-xlim(1.5, 10.5)
+    geom_boxplot(outlier.shape = NA, varwidth = TRUE) + theme_bw() +
+    scale_y_discrete(labels = c("Between Groups" = "Between\nGroups")) +
+    xlim(1.5, 10.5)
 
 ggsave("boxplots_dist_ori.pdf", width=4, height=2.5, units='in')
 
@@ -172,13 +171,13 @@ ggsave("boxplots_dist_ori.pdf", width=4, height=2.5, units='in')
 # for all subjects, find the number of communities with mean posterior lambda
 
 num_cum_healthy <- sapply(1:64, function(s) {
-    curr_fmri <- Z_all[[s]][[post_mean_int[s]]]
-    sum(svd(curr_fmri)$d < 1E-5)
+    currZ <- Zres[[s]][[post_mean_int[s]]]
+    sum(svd(currZ)$d < 1E-5)
 })
 
 num_cum_diseased <- sapply(65:S, function(s) {
-    curr_fmri <- Z_all[[s]][[post_mean_int[s]]]
-    sum(svd(curr_fmri)$d < 1E-5)
+    currZ <- Zres[[s]][[post_mean_int[s]]]
+    sum(svd(currZ)$d < 1E-5)
 })
 
 mean(num_cum_healthy)
@@ -202,11 +201,11 @@ ggsave("HFCG_bar_diseased.pdf", width = 4, height = 2.5, unit = "in")
 ##########################################
 ######### adjacency matrix plots #########
 
-p <- dim(list_A[[1]])[1]
+p <- dim(listA[[1]])[1]
 
 plot_adj_mat <- function(subj, filename) {
 
-    LA <- Z_all[[subj]][[post_mean_int[subj]]] # nolint: object_usage_linter
+    LA <- Zres[[subj]][[post_mean_int[subj]]] # nolint: object_usage_linter
     diag(LA) <- 0
     LA[LA > 0] <- 0
     cor_matrix <- melt(-LA)

@@ -2,7 +2,8 @@ linters: linters_with_defaults(
     commented_code_linter = NULL,
     quotes_linter = NULL,
     object_name_linter(
-      styles = c("snake_case", "symbols", "camelCase", "lowercase", "UPPERCASE"),
+      styles = c("snake_case", "symbols", "camelCase", "lowercase",
+        "UPPERCASE", "CamelCase", "dotted.case"),
       regexes = character()),
     assignment_linter = NULL,
     indentation_linter(indent = 4L, hanging_indent_style = c("never")),
