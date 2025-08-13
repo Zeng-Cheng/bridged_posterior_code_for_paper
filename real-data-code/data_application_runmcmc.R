@@ -1,8 +1,7 @@
 # The data are not included in the Github repository
 # if one needs to run the data application (either runmcmc or plot_hfcg)
 # first download the files in the following link to data folder
-url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/
-    AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
+url = 'https://doi.org/10.5281/zenodo.16824059'
 
 load("data/graph_fmri.Rda")
 # 'listA' contains correlation matrices for each subject
@@ -32,11 +31,12 @@ laps <- lapply(1:S, function(s) {
 ## results in a .Rda file which can be read directly
 ###########################################################################
 
-run_mcmc = FALSE
+num_iters = 10000
+run_mcmc = TRUE
 if (run_mcmc) {
     source("src/hfcg_gibbs_sampler.R")
     post_samples <- gibbs_sampler(laps, Zres, lambdas_all, geodist, num_iters)
-    save(post_samples, file="hfcg_gibbs_res.Rda")
+    save(post_samples, file="output/res_hfcg/hfcg_gibbs_res_test.Rda")
 }
 
 ###########################################################################

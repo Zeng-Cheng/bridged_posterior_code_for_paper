@@ -10,8 +10,7 @@ jet_colors <- colorRampPalette(c("#00007F", "blue", "#007FFF",
 # The data are not included in the Github repository
 # if one needs to run the data application (either runmcmc or plot_hfcg)
 # first download the files in the following link to data folder
-url = 'https://www.dropbox.com/scl/fo/9vmvnmeb39nr42hf85cns/
-AA95feliyykgxQxYdBVIxag?rlkey=k08hvo1qw8q0yopu2bmmnvwyq&dl=0'
+url = 'https://doi.org/10.5281/zenodo.16824059'
 
 # 'listA' contains correlation matrices for each subject
 load("data/graph_fmri.Rda")
@@ -19,7 +18,7 @@ load("data/graph_fmri.Rda")
 S <- length(listA)
 load("data/fmri_labels.Rda") # Labels for each subject in 'label_list'
 labels = sapply(label_list, function(ll) {
-    if(ll == "CN") 0
+    if (ll == "CN") 0
     else if (ll == "LMCI") 1
     else 2
 })
